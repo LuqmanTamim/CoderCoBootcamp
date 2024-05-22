@@ -1,7 +1,7 @@
 #  Network topology for a small office setup
 #### __*Network topology is the arrangement of nodes within a network. A node is just simply a point of connection or intersection like a computer or router. In our example, we will be looking to create a network for a small office bearing in mind scalability, redundancy, and security.*__
 
-Image 1
+![OfficeTopologyTypes](OfficeTopolgyTypesImage1.jpg)
 
 ### Scalability  
 * One cost-effective infrastructure is the use of the cloud. The cloud allows servers to be accessed virtually (from any location) rather than on-prem. Due to the office being small, it would be expensive to host physical servers in another room or building.
@@ -10,7 +10,7 @@ Image 1
 * With a few clicks capacity can be adjusted and services can be used 
  
 
-Image 2
+![Scalability](ScalabilityImage2.jpg)
 
 
 ### Redundancy  
@@ -25,7 +25,7 @@ Image 2
 * Firewalls encrypt data so that to hackers the data is not able to be read   
 * Having both internal and external firewalls is perfect as it will protect the network from external threats and protect against traffic sent between internal users of the network.
 
-Image 3
+![alt text](SecurityImage3.jpg)
 
 
 
