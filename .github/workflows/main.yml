@@ -1,4 +1,4 @@
-name: CI/CD Pipeline to Build and Push Docker Image to AWS ECR
+name: Build and Push Docker Image to ECR
 
 on:
   push:
@@ -20,19 +20,24 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          region: us-east-1  
+          region: us-east-1  # Replace with your AWS region
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  
+          aws-region: us-east-1  # Replace with your AWS region
 
       - name: Build and tag Docker image
         run: |
           docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest .
           docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest
+
 
       - name: Push Docker image to ECR
         run: |
