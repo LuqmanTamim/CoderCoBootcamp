@@ -1,36 +1,39 @@
 name: CI/CD Pipeline to Build and Push Docker Image to AWS ECR
 
-
 on:
   push:
     branches:
       - main
 
 jobs:
-  build-and-push:
+  build_and_push:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Login to Amazon ECR
-      id: ecr-login
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: us-east-1  
 
-    - name: Build Docker image
-      run: |
-        docker build -t ${{ secrets.ECR_REPOSITORY }}:latest .
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  
 
-    - name: Tag Docker image
-      run: |
-        IMAGE_URI="${{ steps.ecr-login.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest"
-        docker tag ${{ secrets.ECR_REPOSITORY }}:latest $IMAGE_URI
+      - name: Build and tag Docker image
+        run: |
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest .
+          docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest
 
-    - name: Push Docker image to ECR
-      run: |
-        IMAGE_URI="${{ steps.ecr-login.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest"
-        docker push $IMAGE_URI
+      - name: Push Docker image to ECR
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/python-app:latest
