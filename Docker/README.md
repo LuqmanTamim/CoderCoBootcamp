@@ -1,4 +1,4 @@
-# End-to-End Automation for a React App
+# End-to-End Automation for a Python App
 
 ### This project looks to create the build stage of a CI/CD pipeline by containerising a python application, pushing an images to Elastic container registry, and using the image later in the deploy stage that creates the infra Elastic beanstalk, allowing for quick deployment, management and scaling.
 
