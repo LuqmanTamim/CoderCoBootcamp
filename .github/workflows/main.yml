@@ -1,7 +1,5 @@
 name: CI/CD WorkFlow to Build and Push Docker file to AWS ECR
 
-name: Build and Push Docker Image to ECR
-
 on:
   push:
     branches:
