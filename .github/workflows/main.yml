@@ -30,11 +30,11 @@ jobs:
         env:
           AWS_REGION: ${{ secrets.MY_APP_AWS_REGION }}
         run: |
-          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/YOUR_ECR_REPOSITORY_NAME:latest .
-          docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/YOUR_ECR_REPOSITORY_NAME:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/YOUR_ECR_REPOSITORY_NAME:latest
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest .
+          docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest
 
       - name: Push Docker image to ECR
         env:
           AWS_REGION: ${{ secrets.MY_APP_AWS_REGION }}
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/YOUR_ECR_REPOSITORY_NAME:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest
