@@ -1,4 +1,4 @@
-name: CI/CD WorkFlow to Build and Push Docker file to AWS ECR
+name: CI/CD Pipeline to Build and Push Docker Image to AWS ECR
 
 on:
   push:
@@ -24,17 +24,14 @@ jobs:
           aws-region: ${{ secrets.MY_APP_AWS_REGION }}
 
       - name: Log in to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build and tag Docker image
-        env:
-          AWS_REGION: ${{ secrets.MY_APP_AWS_REGION }}
         run: |
-          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest .
-          docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest .
+          docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
 
       - name: Push Docker image to ECR
-        env:
-          AWS_REGION: ${{ secrets.MY_APP_AWS_REGION }}
         run: |
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/python-app:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
