@@ -56,6 +56,8 @@ jobs:
             sudo yum install docker -y
             sudo systemctl start docker
             sudo systemctl enable docker
+            sudo usermod -aG docker ${{ secrets.EC2_USER }}
+            newgrp docker
             aws ecr get-login-password --region ${{ secrets.MY_APP_AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com
             docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
             docker stop my_app || true
