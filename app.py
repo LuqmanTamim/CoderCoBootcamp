@@ -1,1 +1,1 @@
-print( "Hello world, my names' Luqman. Welcome to my Python app!" )
+print( "It works!" )
