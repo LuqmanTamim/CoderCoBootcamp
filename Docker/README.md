@@ -5,13 +5,14 @@
 ##### The project utilises
 - AWS
 - ECR
-- ELastic Beanstalk
+- EC2
 - CDK
 - IAM
 - Python
 - Docker
 - VS Code
-- Powershell   
+- Powershell
+- YAML  
 
 
 
