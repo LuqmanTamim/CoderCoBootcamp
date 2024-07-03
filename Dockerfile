@@ -4,4 +4,6 @@ WORKDIR /app
 
 COPY . /app
 
-CMD ["python3", "app.py"]
+RUN pip install flask
+
+CMD ["python", "app.py"]
