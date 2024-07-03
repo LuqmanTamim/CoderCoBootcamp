@@ -61,4 +61,4 @@ jobs:
             docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
             docker stop my_app || true
             docker rm my_app || true
-            docker run -d --name my_app -p 80:8080 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
+            docker run -d --name my_app -p 80:80 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
