@@ -1,1 +1,1 @@
-print("Hello World! I'm Luqman, nice to meet you. This is my first image :)")
+print("It Works!")
