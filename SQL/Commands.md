@@ -148,3 +148,6 @@ LIMIT 2;
 ```
 
 LIKE is used to filter by a pattern so in this example emails that start with hello will be retrieved 
+
+#### Performing JOINS
+
