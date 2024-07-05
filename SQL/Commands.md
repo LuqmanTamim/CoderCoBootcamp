@@ -151,3 +151,28 @@ LIKE is used to filter by a pattern so in this example emails that start with he
 
 #### Performing JOINS
 
+Used to coonect data between two tables where the teables share the same row title. 
+
+```
+SELECT *
+
+FROM martian
+
+INNER JOIN base
+
+ON martian.base_id = base.base_id;
+```
+Here we look to connect the base id from the martian table with the base is with the base table. We also selected all other coloumns using *.
+
+Now if we want to select specific coloumns we remove the * and write the coloumns we want to select. BUT it must me specific to a table, you cannot just write SELECT martian_id. base_id, base name. You have to be specific to which table so: SELECT martian.martian_id, base.base_id, base.base_name. it looks like this:
+
+```
+SELECT martian.martian_id, base.base_id, base.base_name
+
+FROM martian
+
+INNER JOIN base
+
+ON martian.martian_id = base.base_id;
+```
+
