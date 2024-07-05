@@ -164,8 +164,6 @@ ON martian.base_id = base.base_id;
 ```
 Here we look to connect the base id from the martian table with the base is with the base table. We also selected all other coloumns using *.
 
-Now if we want to select specific coloumns we remove the * and write the coloumns we want to select. BUT it must me specific to a table, you cannot just write SELECT martian_id. base_id, base name. You have to be specific to which table so: SELECT martian.martian_id, base.base_id, base.base_name. it looks like this:
-
 ```
 SELECT martian.martian_id, base.base_id, base.base_name
 
@@ -175,4 +173,30 @@ INNER JOIN base
 
 ON martian.martian_id = base.base_id;
 ```
+
+Now if we want to select specific coloumns we remove the * and write the coloumns we want to select. BUT it must me specific to a table, you cannot just write SELECT martian_id. base_id, base name. You have to be specific to which table so: SELECT martian.martian_id, base.base_id, base.base_name. it looks like this:
+
+```
+SELECT m.martian_id, b.base_id, b.base_name
+
+FROM martian AS m
+
+INNER JOIN base as b
+
+ON m.martian_id = b.base_id;
+```
+We can rename tables by stating martian as m and base as b. AS stands for alius
+
+### Types of Joins
+
+There are 4 types of joins INNER LEFT RIGHT FULL 
+
+- The ``` SELECT INNER ``` join will connect the left row with right row only when the ON condition is met
+- The ``` SELECT LEFT ``` join will perform an INNER join and include all other rows from left table. The rows from the left table that have no matches will have a value null
+- The ``` SELECT RIGHT ``` join will perform an INNER join and include all other rows from right table. The rows from the right table that have no matches will have a value null
+- The ``` SELECT FULL ``` join will returnn all rows from left and right tables. If some rows have matches they will be joined but if not, they will have a null value  
+
+#### Self Join
+
+
 
