@@ -1,4 +1,4 @@
-# 3 tier architecture using a LAMP stack (Linux, Apache, MySQL, PHP)
+# 3 Tier Architecture on AWS using a LAMP stack (Linux, Apache, MySQL, PHP)
 
 ### Introduction
 
@@ -121,4 +121,92 @@ Security Group acts as a Firewall at the instance level and will only allow inbo
 - Toggle Launch instance
 
 
-## Steps for SHH into EC2 instance
+## Steps SSH into EC2 instance 
+
+### What is SSH?
+
+###### SSH is a secure shell used to connect and access a EC2 instance securely using the CLI 
+
+### Steps for connecting via SSH
+
+1. Navigate to the EC2 console
+2. Toggle the checkbox for the EC2 instance WordPress-EC2
+3. Toggle Connect
+4. Toggle SSH client tab
+5. Open a SHH client on your computer (Git bash, Powershell, MacOS, Windows etc)
+6. cd into the directory that contains the WordPress-KeyPair
+7. Run the following command: ``` chmod 400 your-key-pair-name (tutorial-ec2-key-pair.pem) ```
+8. Connect to your instance using its Public DNS: Eg. ``` ssh -i “your-key-pair-name.pem” ec2-user@ec2-ip-address-region.compute.amazonaws.com ```
+9. Enter ``` yes ``` when asked would you like to continue connecting 
+
+The EC2 instance is now accessed through the CLI 
+
+## Intalling LAMP stack 
+
+### Step1: Installing Apache, MariaDB and PHP
+
+1. Make sure you have SSH into the insatnce
+2. Update the software on the WordPress-EC2, the dnf command is used to install multiple software packages
+``` sudo dnf update -y ```
+3. Install Apache web server and PHP 
+``` sudo dnf install -y httpd wget php-fpm php-mysqli php-json php php-devel ```
+4. Install MariaDB
+``` sudo dnf install mariadb105-server -y```
+5. Start Apache web server using:
+``` sudo systemctl start httpd ```
+6. Enable the Apache web server:
+``` sudo systemctl enable httpd ```
+Verify if Apache is enabled using either
+``` sudo systemctl is-enabled httpd ``` Where the code will write "enabled" or ``` sudo systemctl status httpd ``` which will check the status and write "enabled". To exit this press Esc on keyboard followed by ``` :q! ```
+7. The web server should be running and we can test this by, navigating to the instance on the AWS console and by toggling Public IPv4 DNS. Check to see if the URL has HTTPS, if so, change it to HTTP. The Apache web page should display "It works!"
+
+### Step 2: Set file permissions
+
+##### To allow the EC2 user to manipulate files in Apache through the root directory (/var/www/html) the directory's ownership and permissions shoule be modified. 
+
+1. Add the ec2-user (the user we are using) to the Apache group
+``` sudo usermod -a -G apache ec2-user ```
+2. Log out of the instance by using command ``` exit``` then SSH back into the instance so the Apache group can pick up the new update
+3. Verify that  the ec2-user has been added
+``` groups ``` 
+The output on the terminal should be ``` ec2-user adm wheel apache systemd-journal ```
+4. Change the group ownership of the root directory and its conetnts
+``` sudo chown -R ec2-user:apache /var/www ```
+5. Change the directory permission to add group write permissions and to set group ID on future subdirectories:
+``` sudo chmod 2775 /var/www && find /var/www -type d -exec sudo chmod 2775 {} \; ```
+
+``` find /var/www -type f -exec sudo chmod 0664 {} \; ```
+
+The user (ec2-user) and any other memebers added to the Apache group can add, delete, and edit files in the Apache root directory. This now allows the users of the group to add content. In our case a WordPress site via PHP.
+
+### Step 3: Test the LAMP server
+
+##### In order to view content we must add it to the Apache root directory (/var/www/html) which we can display via the public DNS address for our EC2 instance. 
+
+1. Create a PHP file in the Apache document root file (/var/www/html) 
+``` echo "<?php phpinfo(); ?>" > /var/www/html/phpinfo.php ```
+2. On your insatnce information on the AWS console open the instance using Public IPv4 DNS, and type /phpinfo.php at the end. So it should look like this: http://my.public.dns.amazonaws.com/phpinfo.php
+
+Now you should see the PHP information page
+3. Due to security reasons the PHP information should not be accessible via the internet so we must remove it 
+```rm /var/www/html/phpinfo.php ```
+
+### Step 4: Securing the database
+
+##### The data base can be secured by adding a root password and removing the insecure installation features from the install.
+
+1. Start the MariaDB server using systemctl command
+``` sudo systemctl start mariadb ```
+2. Enable the MariaDB server using systemctl command
+``` sudo systemctl enable mariadb ```
+3. Run 
+``` sudo mysql_secure_installation ```
+- When prompted with the root password press Enter on your keyboard. This is because we have not set a root passowrd and by default the root account doesnt have a password.
+- When asked ``` Switch to unix_socket authentication [Y/n] ``` Type ``` Y ``` 
+-  When asked ``` Change the root password? ``` Type ``` Y ```. Note this password soemwhere where you can remember it. For example Notes
+- We aim to not use the root user so we will create a database user as it is best practice.
+- Type ``` Y ``` to remove the anonymous user accounts
+- Type ``` Y ``` to disable the remote root login
+- Type ``` Y ``` to remove the test database
+- Type ``` Y ``` to reload the privilege tables and save your changes
+
