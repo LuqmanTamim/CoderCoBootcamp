@@ -210,3 +210,138 @@ Now you should see the PHP information page
 - Type ``` Y ``` to remove the test database
 - Type ``` Y ``` to reload the privilege tables and save your changes
 
+
+### Step 5: Install WordPress
+
+1. Download and install the following packages
+``` sudo dnf install wget php-mysqlnd httpd php-fpm php-mysqli mariadb105-server php-json php php-devel -y ```
+2. cd into the Apache directory 
+``` cd /var/www/html/ ```
+3. Download and insatll latest WordPress
+``` sudo wget https://wordpress.org/latest.tar.gz ```
+The wget command is used to download files from the internet directly into a direcoty and in this case the Apache root directory 
+
+### Step 6: Create a database and database user for the WordPress site
+
+1. Since we have no user created we must log into the root user 
+``` sudo mysql -u root -p ```
+2. Enter the root password
+3. Create a user and password
+``` CREATE USER 'WordPress-user'@'localhost' IDENTIFIED BY 'Password'; ```
+The stronger the passowrd the better and it is best practice to use different types of characters: Numbers, Symbols, Capital letters etc
+4. Create the database 
+```CREATE DATABASE `WordPress-db`;```
+5. Grant full privileges to the WordPress-user 
+```GRANT ALL PRIVILEGES ON `WordPress-db`.* TO "WordPress-user"@"localhost";```
+6. So that the database can pick up on the new privileges we flush it
+```FLUSH PRIVILEGES;```
+7. To view the database run command
+```SHOW DATABASES;```
+8. Exit the MySQL client by running 
+``` exit ```
+
+### Step 7: Creating and editing wp-config.php file
+
+1. cd into the WordPress directory 
+``` cd www/var/html/wordpress ``` 
+2. Copy the wp-config-sample.php file to a file called wp-config.php
+```cp wp-config-sample.php wp-config.php ```
+3. To edit the file we use the nano command or vim 
+``` sudo nano wp-config.php ```
+4. Scroll down to the line that states ``` DB_NAME``` change ``` database_name_here ``` to the database name (WordPress-db)
+``` define('DB_NAME', 'WordPress-db'); ```
+5. For the line that states ``` DB_USER``` change ``` username_here ``` to the database user (WordPress-user)
+``` define('DB_USER', 'WordPress-user'); ```
+6. For the line that states ``` DB_PASSWORD``` change ``` password_here``` to the databse password (Password)
+``` define('DB_NAME', 'Password'); ```
+7. Scroll down to the section that states ``` Authentication Unique Keys and Salts ```. The the Key and salts encrypt the browser coockies increasing security. We generate the set of keys by visiting: https://api.wordpress.org/secret-key/1.1/salt/ . Now insert the values into wp-config.php file and replace the values on the wp-config.php file.
+8. Save and exit by running ``` Ctrl X ``` on your keyboard followed by ``` y ``` and ``` Enter ``` on your keyboard
+
+### Step 8: Installing the WordPress file in the Apache root
+
+##### The WordPress files are ready to be copied to the Apache (web server ) root directory allowing for the files to be run.
+
+1. Copy the WordPress files (content) to the Apache root
+``` sudo mv * .. ```
+2. cd into the Apache directory 
+```cd .. ```
+3. List the files to verify if teh WordPress files are in the Apache directory
+``` ls ```
+4. Delete emptied wordpress directory and latest.tar.gz file as we no longer need them
+``` sudo rm latest.tar.gz ```
+```sudo rm wordpress -r```
+
+### Step 9: Allowing WordPress to use permalinks
+
+##### A permalink is a permanent URL used to type into a search engine. Amazon Linux doesn't have this activated as standard. The following commands grant the permalink for the WordPres site
+
+1. Open the httpd.conf file with the nano or vim command to edit the file
+``` sudo nano /etc/httpd/conf/httpd.conf ```
+2. Locate the section: ``` <Directory “/var/www/html”> ``` it should look like this: 
+
+``` 
+<Directory "/var/www/html">
+    #
+    # Possible values for the Options directive are "None", "All",
+    # or any combination of:
+    #   Indexes Includes FollowSymLinks SymLinksifOwnerMatch ExecCGI MultiViews
+    #
+    # Note that "MultiViews" must be named *explicitly* --- "Options All"
+    # doesn't give it to you.
+    #
+    # The Options directive is both complicated and important.  Please see
+    # http://httpd.apache.org/docs/2.4/mod/core.html#options
+    # for more information.
+    #
+    Options Indexes FollowSymLinks
+    #
+    # AllowOverride controls what directives may be placed in .htaccess files.
+    # It can be "All", "None", or any combination of the keywords:
+    #   Options FileInfo AuthConfig Limit
+    #
+    AllowOverride None
+    #
+    # Controls who can get stuff from this server.
+    #
+    Require all granted
+</Directory>
+```
+3. In the same section change ``` AllowOverride None ``` to ```AllowOverride All```.
+4. Save the file by pressing ``` Ctrl X ``` on the keyboard foolowed by ```y``` and Enter to exit 
+
+### Step 10: Installing PHP graphics drawing library on the instance
+1. Install the GD library to PHP, allowing the modification of images 
+``` sudo dnf install php-gd ```
+2. Restart the Apache web server to pick up the new changes
+``` sudo systemctl restart httpd ```
+
+### Step 11: Ensure that all servers and services are running
+
+1. Ensure the httpd and MariaDB database are running and start at every system boot
+``` sudo systemctl enable httpd && sudo systemctl enable mariadb ```
+2. Verify that MariaDB database is running 
+``` sudo systemctl status mariadb ``` 
+If not start it using ``` sudo systemctl start mariadb ```
+3. Verify that Apache web server is running 
+``` sudo systemctl status httpd ``` 
+If not start it using ``` sudo systemctl start httpd ```
+
+### Step 12: Launch the Website and configure
+1. In any web browser insert the URL or alternativley on the AWS console launch the instance using the Public IPv4 DNS
+2. Fill in the information > Site Title > Username > Password > Email
+4. Toggle Install WordPress button 
+5. Toggle the Login button and login using the Username and Password you created
+6. Finally you can edit the site to make it personalised
+
+## Clean up
+
+AWS services incure charges by the miniute so to avoid the fees:
+1. If you would like to keep the instance but stop it from running you can Stop the instance by:
+- Navigating to the EC2 console
+- Toggle the checkbox of the WordPress-EC2 instance
+- Toggle Instance state > Stop instance 
+2. If you would like to terminate the instance and all services used then:
+- Navigating to the EC2 console
+- Toggle the checkbox of the WordPress-EC2 instance
+- Toggle Instance state > Terminate instance 
+- Delete the WordPress-VPC, WordPress-RT, WordPress-IGW, and WordPress-EC2-SG (VPC, Route table, Internet Gateway and the Security Group) 
