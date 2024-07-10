@@ -67,3 +67,100 @@ data "aws_subnet_ids" "default_subnet" {
 }
 ```
 3. To make the Terraform configuration cleaner, the script should be divided into sections such as storage, compute etc
+
+### Variables and Outputs
+
+##### Variable Types
+
+1. __*Input Variable*__: thought of as input paramketers. Used to define the arguments within our resource:
+
+```
+variable "instance_type" {
+    description - "ec2 instance type"
+    type = string
+    default = "t2.micro"
+}
+```
+and referenced by ```var.<name> ```:
+
+```
+resource "aws_instance" "example" {
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = var.instance_type
+}
+```
+
+2. __*Local Variable*__:  used to simplify expressions and avoid repetition within a Terraform configuration file. They are primarily for internal use within a module and are not meant to be set from outside the module referenced by ```local.<name> ```:
+
+```
+locals {
+  instance_count = 3
+  instance_type  = "t2.micro"
+}
+
+resource "aws_instance" "example" {
+  count         = local.instance_count
+  ami           = "ami-0c55b159cbfafe1f0"
+  instance_type = local.instance_type
+}
+
+```
+
+3. __*Output Variable*__: used to extract information from your Terraform configurations and display it to the user. They can also be used to pass values to other modules:
+
+```
+output "instance_id" {
+  description = "The ID of the EC2 instance"
+  value       = aws_instance.example.id
+}
+
+output "instance_public_ip" {
+  description = "The public IP of the EC2 instance"
+  value       = aws_instance.example.public_ip
+}
+
+```
+4. Primitive Types:  
+
+- __*string*__: A string is a sequence of characters. Strings are defined using double quotes (") or heredoc syntax for multi-line strings:
+
+```
+variable "example_string" {
+  type    = string
+  default = "Hello, Terraform!"
+}
+
+output "example_output" {
+  value = var.example_string
+}
+
+```
+- __*number*__: A number can be an integer or a number with a decimal point (floating point value):
+
+```
+variable "example_number" {
+  type    = number
+  default = 42
+}
+
+output "example_output" {
+  value = var.example_number
+}
+
+```
+
+- __*boolean*__: A boolean is a value that can be either true or false.
+
+5. Sensitive data: sensitive data within the config can be marked as sensitive data by marking the variable as sensitive:
+
+``` sensitive   = true ``` as an example:
+
+```
+variable "db_password" {
+  description = "The password for the database"
+  type        = string
+  sensitive   = true
+}
+
+```
+
