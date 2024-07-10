@@ -66,3 +66,4 @@ data "aws_subnet_ids" "default_subnet" {
   vpc_id = data.aws_vpc.default_vpc.id
 }
 ```
+3. To make the Terraform configuration cleaner, the script should be divided into sections such as storage, compute etc
