@@ -11,3 +11,9 @@
 ### Terraform architecture
 
 ##### Terraform State and Terraform Config Terraform Core
+
+### Terraform set up 
+##### Installing Terraform 
+1. https://developer.hashicorp.com/terraform/install
+2. Download according to OS (Windows, MacOS, Linux etc)
+##### Authenticating to AWS
