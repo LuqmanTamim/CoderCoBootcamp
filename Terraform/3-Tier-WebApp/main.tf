@@ -1,8 +1,8 @@
 terraform {
-  # Assumes s3 bucket and dynamo DB table already set up
-  # See /code/03-basics/aws-backend
+  # This script assumes s3 bucket and dynamo DB table are already set up
+  # See /CoderCoBootcamp/Terraform/AWS-backend
   backend "s3" {
-    bucket         = "devops-directive-tf-state"
+    bucket         = "devops-tf-state"
     key            = "03-basics/web-app/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-locking"
@@ -21,30 +21,30 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_instance" "instance_1" {
+resource "aws_instance" "EC2_1" {
   ami             = "ami-011899242bb902164" # Ubuntu 20.04 LTS // us-east-1
   instance_type   = "t2.micro"
-  security_groups = [aws_security_group.instances.name]
+  security_groups = [aws_security_group.instances.name] #
   user_data       = <<-EOF
               #!/bin/bash
-              echo "Hello, World 1" > index.html
+              echo "Hello, World! I'm Luqman's first instance" > index.html
               python3 -m http.server 8080 &
-              EOF
+              EOF # webserver bash script to populate index.html with Hello World msg and uses python to start http server on port 8080
 }
 
-resource "aws_instance" "instance_2" {
+resource "aws_instance" "EC2_2" {
   ami             = "ami-011899242bb902164" # Ubuntu 20.04 LTS // us-east-1
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.instances.name]
   user_data       = <<-EOF
               #!/bin/bash
-              echo "Hello, World 2" > index.html
+              echo "Hello, World! I'm Luqman's second instance" > index.html
               python3 -m http.server 8080 &
               EOF
 }
 
 resource "aws_s3_bucket" "bucket" {
-  bucket_prefix = "devops-directive-web-app-data"
+  bucket_prefix = "devops-web-app-data"
   force_destroy = true
 }
 
@@ -53,7 +53,7 @@ resource "aws_s3_bucket_versioning" "bucket_versioning" {
   versioning_configuration {
     status = "Enabled"
   }
-}
+} # enabling S3 bucket versioning
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_crypto_conf" {
   bucket = aws_s3_bucket.bucket.bucket
@@ -62,9 +62,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_crypto_con
       sse_algorithm = "AES256"
     }
   }
-}
+} #enabling server side encryption as its default is off
 
-data "aws_vpc" "default_vpc" {
+data "aws_vpc" "default_vpc" {                                    # data block is used to reference an exsisting resource on AWS 
   default = true
 }
 
@@ -77,7 +77,7 @@ resource "aws_security_group" "instances" {
 }
 
 resource "aws_security_group_rule" "allow_http_inbound" {
-  type              = "ingress"
+  type              = "ingress"                                  # refers to inbound traffic
   security_group_id = aws_security_group.instances.id
 
   from_port   = 8080
@@ -103,9 +103,9 @@ resource "aws_lb_listener" "http" {
       status_code  = 404
     }
   }
-}
+}                                                            # If the LB hits a URL that hasn't been configured a 404 page occurs
 
-resource "aws_lb_target_group" "instances" {
+resource "aws_lb_target_group" "instances" {     # Target group for ec2 instances
   name     = "example-target-group"
   port     = 8080
   protocol = "HTTP"
@@ -122,13 +122,13 @@ resource "aws_lb_target_group" "instances" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "instance_1" {
+resource "aws_lb_target_group_attachment" "EC2_1" {
   target_group_arn = aws_lb_target_group.instances.arn
   target_id        = aws_instance.instance_1.id
   port             = 8080
-}
+}                                                              # Attaching the EC2 instances to the target group
 
-resource "aws_lb_target_group_attachment" "instance_2" {
+resource "aws_lb_target_group_attachment" "EC2_2" {
   target_group_arn = aws_lb_target_group.instances.arn
   target_id        = aws_instance.instance_2.id
   port             = 8080
@@ -187,13 +187,13 @@ resource "aws_lb" "load_balancer" {
 }
 
 resource "aws_route53_zone" "primary" {
-  name = "devopsdeployed.com"
+  name = "example.com"  # Domain name
 }
 
 resource "aws_route53_record" "root" {
   zone_id = aws_route53_zone.primary.zone_id
   name    = "devopsdeployed.com"
-  type    = "A"
+  type    = "A"                                 # Zone is used to direct the traffic to the loadbalance 
 
   alias {
     name                   = aws_lb.load_balancer.dns_name
@@ -217,4 +217,4 @@ resource "aws_db_instance" "db_instance" {
   username                   = "foo"
   password                   = "foobarbaz"
   skip_final_snapshot        = true
-}
+}                                                       # Config of RDS instance
