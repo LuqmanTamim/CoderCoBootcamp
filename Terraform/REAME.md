@@ -72,6 +72,8 @@ data "aws_subnet_ids" "default_subnet" {
 
 ##### Variable Types
 
+Variables can be stored in a seperate file which the main.tf file will use as a refernce.
+
 1. __*Input Variable*__: thought of as input paramketers. Used to define the arguments within our resource:
 
 ```
@@ -164,3 +166,79 @@ variable "db_password" {
 
 ```
 
+6. To make the config main.tf script easier to read we can use tfvar files which defines values of variables. For example instead of writting out the long AMI we can define it in tfvar then reference it in the main.tf.
+
+##### Meta-Arguments
+
+1. ``` depends_on ``` depends on specifies that one resource depnds on the other so it enforces the ordering in which resource is created, for example you must create an instance before creating a IAM role for an S3 bucket to access the instance.
+2. ``` count ``` allows for multiple creation of resource/module from a single block. Beneficial for multiple identical resources such as provisioning 4 instances
+3. ``` for each ```
+4. ``` lifecycle ``` used to control terrbehaviour of resources. 
+- ``` create_before_destroy ``` can help with zero downtime as terraform provisions a resource before destroying an old one
+- ``` ignore_changes ``` prevents terraform from trying to revert metadata set elsewhere
+- ``` prevent_destroy ``` the tag can be used to prevent deletion of critical resources in the infrastructure
+
+### Modules
+
+##### What is a module?
+Containers for multiple resources that are used together. It is a collection of .tf and also .tf.json files that are kept in 1 directory. 
+
+Modules are the main way to package and reuse resource configurations wit Terraform.
+
+##### Types of Modules 
+- root module: Default module containing all .tf files in the main working directory 
+- child module: seperate module referred to from a .tf file
+
+
+### Multiple environment
+
+There are two main approaches: workspaces and file structure.
+
+1. Terraform workspaces allow for managing multiple environments of infrastructure within a single configuration. Commands are as followed:
+- ``` terraform workspace new <workspace-name> ```
+- ``` terraform workspace select <workspace-name> ```
+- ``` terraform workspace list ```
+- ``` terraform workspace delete <workspace-name> ```
+
+2. File structure: Isolate components like the stagging, dev, production etc this allows for the isolation of envrionments that dont frequently change from those that change. Example of a file structure:
+
+```
+.
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── terraform.tfvars
+├── provider.tf
+├── modules/
+│   └── vpc/
+│       ├── main.tf
+│       ├── variables.tf
+│       └── outputs.tf
+└── env/
+    ├── dev/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   ├── outputs.tf
+    │   └── terraform.tfvars
+    ├── stage/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   ├── outputs.tf
+    │   └── terraform.tfvars
+    └── prod/
+        ├── main.tf
+        ├── variables.tf
+        ├── outputs.tf
+        └── terraform.tfvars
+```
+
+### Testing Terraform code
+
+##### Static checks
+
+1. Built into Terraform binary:
+- ``` terraform fmt ``` opininated format of indenting and structure code base etc
+- ``` terraform validate ``` checks if code is using correct variables and if the variables are correct. i.e have you used boolean in the correct way 
+- ``` terraform plan ``` used to indicate changes needed to config compared with the current infrastructure. Good to run often
+
+2. external: third party tools for testing checking 
