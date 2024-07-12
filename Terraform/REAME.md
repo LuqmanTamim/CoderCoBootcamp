@@ -2,7 +2,11 @@
 
 ### What is Terraform?
 
-##### Terraform is an IaC tool used for building. changing and versioning infrastructure safely and efficiently. Terraform allows us to define infrastructure as code which creates an immutable and idempotent infrastructure. Terraform is compatible with many cloud providers and services making it cloud agnostic.
+##### Terraform is an IaC tool used for building. changing and versioning infrastructure safely and efficiently. Terraform allows us to define infrastructure as code which creates an immutable and idempotent infrastructure. Terraform is compatible with many cloud providers and services making it cloud agnostic. Terraform handles the deployment by intercating with cloud API's (application programming interface).
+
+### Benefits of Terraform
+
+1. 
 
 ### Difference between TF and other tools such as Ansible and Kubernetes?
 
@@ -18,6 +22,8 @@
 ##### Authenticating to AWS
 1. aws configure on CLI
 2. Enter Access Key info
+##### Terraform Documentation
+1. AWS TF documentation: https://registry.terraform.io/providers/hashicorp/aws/latest/docs
 
 ##### Terraform commands - Basic Usage Sequence
 1. ``` terraform init ``` Used to initalise the backend
@@ -241,4 +247,9 @@ There are two main approaches: workspaces and file structure.
 - ``` terraform validate ``` checks if code is using correct variables and if the variables are correct. i.e have you used boolean in the correct way 
 - ``` terraform plan ``` used to indicate changes needed to config compared with the current infrastructure. Good to run often
 
-2. external: third party tools for testing checking 
+2. external check: third party tools for testing checking 
+
+##### Automated testing
+
+1. Bash script
+2. Terratest

@@ -1,4 +1,4 @@
-# How to add to GitHub
+# GitHub WorkFlow
 
 1. Create a Repositry on GitHub (ABC for example)  
 2. Clone repositry to VS Code
