@@ -6,11 +6,14 @@
 
 ### Benefits of Terraform
 
-1. 
+1. Speed of Infrastructure Management
+2. Low Risk of Human Errors
+3. Version Control
+4. Easy Collaberation Between Team Members
 
 ### Difference between TF and other tools such as Ansible and Kubernetes?
 
-##### TF is for provisioning infrastructure and Ansible is used for configuration managment such as patches. Kubernetes on the other hand is used for orchestration so In simple terms how is the infrastructure managed on the cloud provider. The great thing is that all the tools are used together.
+##### TF is for provisioning infrastructure and Ansible is used for configuration managment such as patches. Kubernetes on the other hand is used for orchestration so in simple terms how is the infrastructure managed on the cloud provider. The great thing is that all the tools are used together.
 
 ### Terraform architecture
 
@@ -27,15 +30,21 @@
 
 ##### Terraform commands - Basic Usage Sequence
 1. ``` terraform init ``` Used to initalise the backend
-2. ``` terraform plan ``` Used to query AWS API to compare what is currently deployed on AWS versus what we have on the TF script
-3. ``` terraform apply ``` Used to apply infrastructure on the cloud provider (AWS)
+2. ``` terraform plan ``` Used to query AWS API to compare what is currently deployed on AWS versus what we have on the TF script. This commands also does a terraform refresh command 
+3. ``` terraform apply -auto-approve``` Used to apply infrastructure on the cloud provider (AWS), auto approve bypasses the approval stage
 4. ``` terraform destroy ``` Used to remove the infrastructure that was just provisioned 
+- If you would like to destroy a specific resource such as an ec2 instance you can use 
+``` terraform destroy -target aws_instance.myec2 ``` where aws_instance is the resource and myec2 is the local resource name
 
 ##### State File
 
 1. JSON file containing information about every resource and data object provisioned on AWS.
-2. Conatins sensitive inof such as passwords so best practice to restrict access
+2. Conatins sensitive info such as passwords so best practice to restrict access
 3. Can be stored locally or remotely. Remote backend is best practice to allow many engineers to work on the files together, encrypt the data, and automate through pipelines.
+4. Current state is the current state of the infrastructure and the desired state is what the infrastructure should be
+
+###### Dependancy lock file
+The file allows for the locking of a specific version of Terraform
 
 ##### Terraform State is the actual state of the infrastructure and Terraform Config is the new desired state of the infrastructure. We can use ``` terraform apply `` to apply this infrastructure.
 
@@ -80,7 +89,7 @@ data "aws_subnet_ids" "default_subnet" {
 
 Variables can be stored in a seperate file which the main.tf file will use as a refernce.
 
-1. __*Input Variable*__: thought of as input paramketers. Used to define the arguments within our resource:
+1. __*Input Variable*__: thought of as input parameters. WE can use variables to store important values in a central place instead of searching for them. If it is a repeated value and we need to change the value we can save time by just chnaging the input value. Used to define the arguments within our resource:
 
 ```
 variable "instance_type" {
@@ -89,12 +98,28 @@ variable "instance_type" {
     default = "t2.micro"
 }
 ```
-and referenced by ```var.<name> ```:
+and referenced by syntax: ```var.<name> ```:
 
 ```
 resource "aws_instance" "example" {
   ami           = "ami-0c55b159cbfafe1f0"
   instance_type = var.instance_type
+}
+```
+
+You can also get Terraform to ouput all attributes (data regarding resource found in state file) regarding the resource by outputting the resource itself
+
+```
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_eip" "lb" {
+  domain   = "vpc"
+}
+
+output "public-ip" {
+  value = aws_eip.lb         # when we do a terraform apply the attributes of the elastic ip will be presented on CLI
 }
 ```
 
@@ -114,7 +139,7 @@ resource "aws_instance" "example" {
 
 ```
 
-3. __*Output Variable*__: used to extract information from your Terraform configurations and display it to the user. They can also be used to pass values to other modules:
+3. __*Output Variable*__: used to extract information from your Terraform configurations and display it to the user on the command line. They can also be used to pass values to other modules:
 
 ```
 output "instance_id" {
@@ -253,3 +278,30 @@ There are two main approaches: workspaces and file structure.
 
 1. Bash script
 2. Terratest
+
+##### Cross Resource Atrribute Refernces
+
+You can use information from the state file for a resource that is dependant on another resource. Wehen cross referencing the sytax is 
+<RESOURCE TYPE>.<NAME>.<ATTRIBUTE> For example if you want to create an Elastic IP and a Security group and allow the Security group to allow traffic from that elastic IP YOU CAN WRITE:
+
+```
+resource "aws_eip" "lp" {
+  domain  = "vpc"
+}
+
+resource "aws_security_group" "allow_tls" {
+  name        - "attribute-firewall"
+}
+
+resource "aws_security_group_ingress_ruke" "allow_tls_ipv4" {
+  security_group_id = aws_security_group.allow_tls.id                # this id is also taken from the state file
+  cidr_ipV4         = "${aws_eip.lb.public_ip}/32                    # this will be taken from the state file, 
+                                                                     # /32 IS THE CIDR block which must be added
+                                                                     # ${} is the string interpolation that terrfaorm uses to get info from state # file
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
+```
+
+w
