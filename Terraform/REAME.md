@@ -153,9 +153,20 @@ output "instance_public_ip" {
 }
 
 ```
-4. Primitive Types:  
 
-- __*string*__: A string is a sequence of characters. Strings are defined using double quotes (") or heredoc syntax for multi-line strings:
+Variables also have a precedence order
+
+1. ```-var``` and ```-var-file``` defined on the command line when doing a ```terrafrom apply```
+2. *.auto.trvars or *.auto.tfvars.json files
+3. terraform.tfvars.json file
+4. terraform.tfvars file
+5. Environment variables
+
+4. Primitive Types/ Data Types:  
+
+These data types restrict the type of data that can be included in a resource
+
+- __*string*__: A string is a sequence of characters. Strings are defined using double quotes:
 
 ```
 variable "example_string" {
@@ -183,6 +194,24 @@ output "example_output" {
 ```
 
 - __*boolean*__: A boolean is a value that can be either true or false.
+
+-__*list*__: A list is a collection of values for a single variable/argument 
+
+```
+variable "my-list" {
+  type = list
+  default = "["London","New York","Paris"]
+}
+```
+
+We can also specify the type of vaules in the list, for example only limitting values to numbers:
+
+```
+variable "my-list" {
+  type = list (number)
+  default = ["1","2","3"]
+}
+```
 
 5. Sensitive data: sensitive data within the config can be marked as sensitive data by marking the variable as sensitive:
 
@@ -262,6 +291,10 @@ There are two main approaches: workspaces and file structure.
         ├── outputs.tf
         └── terraform.tfvars
 ```
+Recommended Folder structure:
+1. Main Terraform config file
+2. variables.tf file with all variables
+3. terraform.tfvars file that defines value to all variables
 
 ### Testing Terraform code
 
