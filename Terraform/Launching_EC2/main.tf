@@ -13,7 +13,11 @@ provider "aws" {
   region = "us-east-1"         # region of deployment
 }
 
-resource "aws_instance" "example" {   # example is the name of ec2 isnatnce
-  ami           = "ami-011899242bb902164" # AMI corresponds to Ubuntu 20.04 LTS // us-east-1
+resource "aws_instance" "example" {  #aws_instance is the resource type and example is the local name which can be modified
+  ami           = "ami-0b72821e2f351e396" # AMI corresponds to Amazon Linux 2023 // us-east-1
   instance_type = "t2.micro" # type of instance size
+  
+  tags = {
+    Name = "Terraform-EC2" # used to name the EC2 instance
+  }
 }
