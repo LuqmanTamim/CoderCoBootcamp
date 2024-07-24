@@ -87,7 +87,9 @@ data "aws_subnet_ids" "default_subnet" {
 
 ##### Variable Types
 
-Variables can be stored in a seperate file which the main.tf file will use as a refernce.
+Variables can be stored in a seperate file which the main.tf file will use as a reference.
+
+IF VARIABLE IS NOT LISTED YOU CAN APPLY IT VIA CLI BY TYPING THE VALUE: ```{"xyz"}```
 
 1. __*Input Variable*__: thought of as input parameters. WE can use variables to store important values in a central place instead of searching for them. If it is a repeated value and we need to change the value we can save time by just chnaging the input value. Used to define the arguments within our resource:
 
@@ -162,6 +164,8 @@ Variables also have a precedence order
 4. terraform.tfvars file
 5. Environment variables
 
+TFVARS file includes the data of the variable whilst the Variables.tf file only includes the name of the variable
+
 4. Primitive Types/ Data Types:  
 
 These data types restrict the type of data that can be included in a resource
@@ -195,7 +199,7 @@ output "example_output" {
 
 - __*boolean*__: A boolean is a value that can be either true or false.
 
--__*list*__: A list is a collection of values for a single variable/argument 
+- __*list*__: A list is a collection of *values* for a single variable/argument 
 
 ```
 variable "my-list" {
@@ -210,6 +214,61 @@ We can also specify the type of vaules in the list, for example only limitting v
 variable "my-list" {
   type = list (number)
   default = ["1","2","3"]
+}
+```
+The list can also have only 1 value and still work. Fir exmaple if th argumnet requires a list but there is only 1 value
+
+```
+variable "my-list" {
+  type = list (number)
+  default = ["1"]
+}
+```
+
+- __*Map*__: Collection of *key value* pairs 
+
+```
+variable "instance_tags" {
+  type = map
+  default = {
+    Name = "app-server"
+    Environment = "development"
+    Team = "payments"
+  }
+}
+```
+
+##### How to refernce specific values from Maps and Lists
+
+For Maps
+
+```
+resource = "aws_instance" "myec2"
+    ami = "ami-0c101f26f147fa7fd"
+    instance_type = var.types"us-west-2"  # the key
+
+
+variable "types" {
+  type = map
+  default = {
+    us-east-1 = "t2.micro"
+    us-west-2 = "t2.nano"
+    ap-south-1 = "t2.small"
+  }
+}
+```
+
+For Lists
+
+```
+resource = "aws_instance" "myec2"
+    ami = "ami-0c101f26f147fa7fd"
+    instance_type = var.list"0"  # 0 refers to first value in the list (m5.large), 1 refers to the second value (m5.xlarge), and 2 refers to the third value (t2.medium)
+
+
+variable "list" {
+  type = list
+  default = {"m5.large","m5.xlarge","t2.medium"}
 }
 ```
 
@@ -231,12 +290,129 @@ variable "db_password" {
 ##### Meta-Arguments
 
 1. ``` depends_on ``` depends on specifies that one resource depnds on the other so it enforces the ordering in which resource is created, for example you must create an instance before creating a IAM role for an S3 bucket to access the instance.
-2. ``` count ``` allows for multiple creation of resource/module from a single block. Beneficial for multiple identical resources such as provisioning 4 instances
+2. ``` count ``` allows for multiple creation of resource/module from a single block. Beneficial for multiple identical resources such as provisioning 4 instances:
+
+```
+resource "aws_instance" "ec2" {
+    ami = "ami-00c39f71452c08778"
+    instance_type = "t2.micro"
+    count = 4
+}
+```
+to add names (tags) to each instance:
+
+```
+resource "aws_instance" "ec2" {
+    ami = "ami-00c39f71452c08778"
+    instance_type = "t2.micro"
+    count = 4
+
+    tags = {
+      Name = "payments-system-${count.index}"
+    }
+}
+```
+The count index will call in each instance payment-system-0, payment-system-1, payment-system-2, payment-system-3
+
+```
+resource "aws_instance" "ec2" {
+    ami = "ami-00c39f71452c08778"
+    instance_type = "t2.micro"
+    count = 4
+
+    tags = {
+      Name = "payments-system-${count.index}"
+    }
+}
+```
+
 3. ``` for each ```
 4. ``` lifecycle ``` used to control terrbehaviour of resources. 
 - ``` create_before_destroy ``` can help with zero downtime as terraform provisions a resource before destroying an old one
 - ``` ignore_changes ``` prevents terraform from trying to revert metadata set elsewhere
 - ``` prevent_destroy ``` the tag can be used to prevent deletion of critical resources in the infrastructure
+
+##### Conditional Expressions
+
+Syntax for a conditional expression is:
+
+```condition ? true_val : false_val``` 
+
+```
+variable "environment" {
+  default = "development"
+}
+
+resource "aws_instance" "myec2" {
+  ami = "ami-00c39f71452c08778"
+  instance_type = var.environment == "development" ? "t2.micro" : "m5.large"
+}
+```
+
+This shows when variable is development terraform creates a t2.micro and when false it creates a m5.large
+
+```
+variable "environment" {
+  default = "development"
+}
+
+resource "aws_instance" "myec2" {
+  ami = "ami-00c39f71452c08778"
+  instance_type = var.environment != "development" ? "t2.micro" : "m5.large"
+}
+```
+This is the opposite to the above if variable environment is not development terraform creates t2.micro and if it is it creates m5.large
+
+```
+variable "environment" {
+  default = "development"
+}
+
+variable "region" {
+  default = "us-east-1"
+}
+
+resource "aws_instance" "myec2" {
+  ami = "ami-00c39f71452c08778"
+  instance_type = var.environment == "development" && var.region == "us-east-1" ? "t2.micro" : "m5.large"
+}
+```
+The above has 2 conditions that are needed to meet if both are met Terraform creates t2.micro if any of the conditions are not met then Terraform creates m5.large
+
+
+### Functions
+
+A function is a block of code that performs a specific task. You can find functions in teh built in functions in the registry  
+
+use the ```terraform console``` command to use the functions
+
+##### Max
+
+max () takes one or more numbers and returns the greatest number 
+
+```max (10,20,30)``` output = ```30```
+
+##### File
+
+file () reads the contents of a file at the given path and returns them as a string 
+
+```file ("./random-file.txt")``` output = 
+
+
+```
+resource "aws_iam_user" "this" {
+  name = "Luqman"
+}
+
+resource "aws_iam_user" "lb_ro" {
+  name = "demo-user-policy"
+  user = aws_iam_user.this.name
+
+  policy = file("./iam-user-policy.json")
+}
+```
+
+Instead of writing out the whole JSON file containing the permissions we can mention the file that contains the permissions making our code concise
 
 ### Modules
 
