@@ -479,7 +479,16 @@ resource "aws_security_group" "allow_tls" {
 
 Data block is used to get information outside of terraform and will fetch the info in a terraform.tfstate file
 
+You can also filter the search: for example filtering from instances that have a tag Team and it is the Production team: 
 
+```
+data "aws_instance" "foo"{
+  filter {
+    name = "tag:Team"
+    values = ["Production"]
+  }
+}
+```
 
 ### Modules
 
