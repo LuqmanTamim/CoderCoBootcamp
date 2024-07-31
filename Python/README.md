@@ -125,3 +125,57 @@ else:
 ```
 
 ##### Chained Conditionals & Nested Statements
+
+We use ```and```, ```or```, ```not```
+
+```
+x = 2
+y = 3
+
+if x == y and x + y == 5:
+```
+This will give a false statement as both must be right
+
+```
+x = 2
+y = 3
+
+if x == y or x + y == 5:
+```
+
+This will give us a True since x + y = 5
+
+```
+x = 2
+y = 3
+
+if not (x == y or x + y == 6):
+```
+
+This not command implies the opposite of the bracket i.e if the operations are not true
+
+```
+x = 2
+y = 3
+
+if x == 2
+    if y == 3:
+        print('x = 2, y = 3')
+    else:
+        print('x = 2, y != 3')
+else:
+    print('x != 2')
+```
+
+Nested statement above
+
+##### Loops
+
+```
+for x in range(0, 10, 1): # (start, stop, step)
+    print(x)
+```
+Prints the numbers 0-9 as 0 is the first number how the loop works it starts with 0 and does 
+x = x + 1. Step is how much you add by 
+
+##### While Loops
