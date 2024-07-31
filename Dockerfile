@@ -10,7 +10,5 @@ COPY . /app
 # Install Flask using pip
 RUN pip install flask
 
-EXPOSE 80
-
-# Flask application is configured to listen on all network interfaces (0.0.0.0) and port 80, making it accessible via the EC2 instance's public IP address
+# Specify the command to run the Flask app when the container starts
 CMD ["python", "app.py"]
