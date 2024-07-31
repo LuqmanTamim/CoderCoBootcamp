@@ -330,3 +330,118 @@ returns
 >> ['hello', 'tim', 'bye']
 
 ### Slice Operator
+
+Used on lists and strings
+
+1. 
+```
+fruits = ['apples', 'pear', 'strawberries']
+text 'Hello I like fruits'
+
+print(text[::])    # start:stop:step
+                   # having nothing defaults to 1:1:1
+```
+
+returns
+
+>> Hello I like fruits
+
+2. Adding to a list 
+
+
+1. 
+```
+fruits = ['apples', 'pears', 'strawberries']
+text 'Hello I like fruits'
+
+fruits[1:1] = 'blueberries'
+
+print(fruits)    
+```
+returns
+>> apples, blueberries, pears, strawberries
+
+
+### Functions
+Has a paramter and we call the parameter in something called an argument
+
+
+```
+def luqmansfunction (x):  #def=define, luqmansfunction= name of function, x = parameter
+    return x + 2  # argument
+```
+```
+def luqmansfunction (x): 
+    return x + 2
+
+newnumber = luqmansfunction (10)
+print(newnumber)
+```
+returns
+>> 12
+
+### Reading a text file
+
+```file = open('file.txt', 'r')``` r stands for read
+
+```
+file = open('file.txt', 'r')
+f = file.readlines()
+```
+states all lines of the file with the enter key at the end of each line (\n)
+
+
+```
+file = open('file.txt', 'r')
+f = file.readlines()
+
+newlist = []
+for line in f:
+    if line [-1] == '\n':
+        newlist.append(line[:-1]) # removes the last character of each line
+    else:
+        newlist.append(line)
+
+print(newlist)
+
+file.close()  # saves changes
+```
+
+easier way
+
+
+```
+file = open('file.txt', 'r')
+f = file.readlines()
+
+newlist = []
+for line in f:
+    newlist.append(line.strip())
+
+print(newlist)
+
+file.close()
+```
+
+### Writing a text file
+
+```
+file = open('file.txt', 'w') #w stands for write and clears entire file and writes new words
+
+file.write('python')
+
+file.close()
+```
+
+if you want things on a differnt line then:
+
+```
+file = open('file.txt', 'w') #w stands for write and clears entire file and writes new words
+
+file.write('python\n') # enter key (\n) makes a new line
+file.write('This is on a new line')
+
+file.close()
+```
+
+### USING .COUNT() and .FIND()
