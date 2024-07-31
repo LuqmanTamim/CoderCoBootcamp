@@ -2,49 +2,49 @@ provider "aws" {
   region = var.region
 }
 
-resource "aws_vpc" "amir_vpc_terraform" {
+resource "aws_vpc" "WordPress_vpc_TF" {
   cidr_block = var.vpc_cidr
   tags = {
-    Name = "amir-vpc-terraform-01"
+    Name = "WordPress-vpc-TF"
   }
 }
 
-resource "aws_subnet" "amir_subnet_terraform" {
-  vpc_id                  = aws_vpc.amir_vpc_terraform.id
+resource "aws_subnet" "WordPress_subnet_TF" {
+  vpc_id                  = aws_vpc.WordPress-vpc-TF.id
   cidr_block              = var.subnet_cidr
   map_public_ip_on_launch = true
   tags = {
-    Name = "amir-subnet-terraform-01"
+    Name = "WordPress-subnet-TF"
   }
 }
 
-resource "aws_internet_gateway" "amir_igw_terraform" {
-  vpc_id = aws_vpc.amir_vpc_terraform.id
+resource "aws_internet_gateway" "WordPress_igw_TF" {
+  vpc_id = aws_vpc.WordPress-vpc-TF.id
   tags = {
-    Name = "amir-igw-terraform-01"
+    Name = "WordPress-igw-TF"
   }
 }
 
-resource "aws_route_table" "amir_rt_terraform" {
-  vpc_id = aws_vpc.amir_vpc_terraform.id
+resource "aws_route_table" "WordPress_rt_TF" {
+  vpc_id = aws_vpc.WordPress_vpc_TF
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.amir_igw_terraform.id
+    gateway_id = aws_internet_gateway.WordPress_igw_TF.id
   }
 
   tags = {
-    Name = "amir-rtb-terraform-01"
+    Name = "WordPress-rt-TF"
   }
 }
 
-resource "aws_route_table_association" "amir_rta_terraform" {
-  subnet_id      = aws_subnet.amir_subnet_terraform.id
-  route_table_id = aws_route_table.amir_rt_terraform.id
+resource "aws_route_table_association" "WordPress_rta_TF" {
+  subnet_id      = aws_subnet.WordPress_subnet_TF.id
+  route_table_id = aws_route_table.WordPress_rt_TF.id
 }
 
-resource "aws_security_group" "amir_sg_terraform" {
-  vpc_id = aws_vpc.amir_vpc_terraform.id
+resource "aws_security_group" "WordPress_sg_TF" {
+  vpc_id = aws_vpc.WordPress_vpc_TF.id
 
   ingress {
     from_port   = 22
@@ -68,21 +68,21 @@ resource "aws_security_group" "amir_sg_terraform" {
   }
 
   tags = {
-    Name = "amir-sg-terraform-01"
+    Name = "WordPress-sg-TF"
   }
 }
 
 locals {
-  instance_names = ["WordPressInstance1"]
+  instance_names = ["WordPressInstance"]
 }
 
 
-resource "aws_instance" "amir_wordpress_instance" {
+resource "aws_instance" "wordpress_EC2" {
   for_each               = toset(local.instance_names)
-  ami                    = "ami-05d929ac8893c382f"  # Amazon Linux 2 AMI
+  ami                    = "ami-0427090fd1714168b"  # Amazon Linux 2 AMI for us-east-1
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.amir_subnet_terraform.id
-  vpc_security_group_ids = [aws_security_group.amir_sg_terraform.id]
+  subnet_id              = aws_subnet.WordPress_subnet_TF.id
+  vpc_security_group_ids = [aws_security_group.WordPress_sg_TF.id]
   key_name               = var.key_name
 
   user_data = <<-EOF
@@ -168,7 +168,7 @@ resource "aws_instance" "amir_wordpress_instance" {
   EOF
 
   tags = {
-    Name = "WordPressInstance1"
+    Name = "WordPressInstance"
   }
 }
 
