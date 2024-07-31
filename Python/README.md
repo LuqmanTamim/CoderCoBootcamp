@@ -169,7 +169,9 @@ else:
 
 Nested statement above
 
-##### Loops
+### Loops
+
+##### For Loops
 
 ```
 for x in range(0, 10, 1): # (start, stop, step)
@@ -179,3 +181,152 @@ Prints the numbers 0-9 as 0 is the first number how the loop works it starts wit
 x = x + 1. Step is how much you add by 
 
 ##### While Loops
+
+
+```
+while loop == True:
+    do this 
+```
+
+```
+loop = True
+
+while loop == True:
+    name = input('insert something: ')
+    if name == 'stop':
+    loop == False     # or we could just type break
+```
+This loop keeps on running until the persn inputs 'stop'
+
+While loops can be used for things like password in which there is criteria i=which the password must meet
+
+
+### Lists and Tuples
+
+##### List
+
+``` fruits = ['apple', 'pear', 3] ``` Catagorised by square brackets 
+
+1. chose from the list and print
+``` 
+fruits = ['apple', 'pear', 3]
+
+print(fruits[0])
+``` 
+```>> pear```
+
+2. adding to the list
+
+``` 
+fruits = ['apple', 'pear', 3]
+print(fruits)
+fruits.append('strawberry')
+print(fruits)
+``` 
+
+3. changing something on the list
+
+``` 
+fruits = ['apple', 'pear', ''strawberry]
+
+fruits[1] = 'blueberry'
+
+print(fruits)
+``` 
+This chnages pear to blueberry
+
+##### Tuple
+
+used for coordinates, colours
+
+``` 
+fruits = ['apple', 'pear', ''strawberry]
+position = (2, 3)
+```
+
+### Interations by Item
+
+```
+fruits = ['apples', 'pear', 'strawberries']
+
+for fruit in fruits:
+    if fruit == 'pears':
+        print (fruits)
+    else:
+        print('not pears')
+```
+
+### String Methods
+
+1. ```.strip()``` removes white spaces when text is inputted
+
+```
+text = input('Input something: ')
+print(text.strip())
+```
+
+so if user inputs
+
+```       hello    ```
+
+returns
+
+>> hello
+
+2. ```len()``` stands for length and returns length of string 
+```
+text = input('Input something: ')
+print(len())
+```
+so if user inputs 
+
+```12345```
+
+returns
+
+>> 5
+
+3. ```.lower()``` stands for lower case and makes the text lower case
+
+```
+text = input('Input something: ')
+print(text.lower())
+```
+so if user inputs 
+
+```LUQmaN WaS heRe```
+
+returns
+
+>> luqman was here
+
+4. ```.upper()``` stands for lower case and makes the tex upper case
+
+```
+text = input('Input something: ')
+print(text.upper())
+```
+so if user inputs 
+
+```LUQmaN WaS heRe```
+
+returns
+
+>> LUQMAN WAS HERE
+
+5. ```.split()``` makes a list 
+
+```
+text = input('Input something: ')
+print(text.split())
+```
+
+so if user inputs 
+
+``` hello.tim.bye```
+
+returns
+
+>> ['hello', 'tim', 'bye']
+
+### Slice Operator
