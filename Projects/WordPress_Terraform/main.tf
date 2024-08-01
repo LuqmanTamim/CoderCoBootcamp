@@ -113,16 +113,16 @@ resource "aws_instance" "wordpress_EC2" {
     sudo systemctl enable mariadb
 
     # Secure MariaDB installation (automated for this example)
-    sudo mysql -e "UPDATE mysql.user SET Password=PASSWORD('M8ng72M8ng72') WHERE User='root';"
+    sudo mysql -e "UPDATE mysql.user SET Password=PASSWORD('LuqmansPassword') WHERE User='root';"
     sudo mysql -e "DELETE FROM mysql.user WHERE User='';"
     sudo mysql -e "DROP DATABASE test;"
     sudo mysql -e "FLUSH PRIVILEGES;"
 
     # Create WordPress database and user
-    sudo mysql -u root -pM8ng72M8ng72 -e "CREATE DATABASE wordpress;"
-    sudo mysql -u root -pM8ng72M8ng72 -e "CREATE USER 'wp_amir'@'localhost' IDENTIFIED BY 'M8ng72M8ng72';"
-    sudo mysql -u root -pM8ng72M8ng72 -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wp_amir'@'localhost';"
-    sudo mysql -u root -pM8ng72M8ng72 -e "FLUSH PRIVILEGES;"
+    sudo mysql -u root -pLuqmansPassword -e "CREATE DATABASE wordpress;"
+    sudo mysql -u root -pLuqmansPassword -e "CREATE USER 'wp_luqman'@'localhost' IDENTIFIED BY 'LuqmansPassword';"
+    sudo mysql -u root -pLuqmansPassword -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wp_luqman'@'localhost';"
+    sudo mysql -u root -pLuqmansPassword -e "FLUSH PRIVILEGES;"
 
     # Download and extract WordPress
     cd /var/www/html
@@ -139,8 +139,8 @@ resource "aws_instance" "wordpress_EC2" {
     # Configure wp-config.php
     sudo cp wp-config-sample.php wp-config.php
     sudo sed -i "s/database_name_here/wordpress/" wp-config.php
-    sudo sed -i "s/username_here/wp_amir/" wp-config.php
-    sudo sed -i "s/password_here/M8ng72M8ng72/" wp-config.php
+    sudo sed -i "s/username_here/wp_luqman/" wp-config.php
+    sudo sed -i "s/password_here/LuqmansPassword/" wp-config.php
     
     # Create Nginx configuration for WordPress
     sudo bash -c 'cat <<EOT > /etc/nginx/conf.d/wordpress.conf
