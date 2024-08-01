@@ -13,17 +13,26 @@ variable "key_name" {
 variable "subnet_cidr" {
   description = "The cidr block of the subnet"
   type        = string
-  default     = "xxx"
+  default     = "10.0.1.0/24"
 }
 
 
 variable "instance_type" {
   description = "The instance type of the EC2 instance"
   type        = string
-  default     = "xxx"
+  default     = "t2.micro"
+}
 
 
 variable "vpc_cidr" {
   description = "The cidr block of the vpc"
   type        = string
-  default     = "xxx"
+  default     = "10.0.0.0/16"
+  }
+
+
+ variable "instance_count" {
+  description = "Number of EC2 instances"
+  type        = number
+  default     = 1
+} 
