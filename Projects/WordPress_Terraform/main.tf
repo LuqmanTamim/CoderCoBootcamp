@@ -171,4 +171,3 @@ resource "aws_instance" "wordpress_EC2" {
     Name = "WordPressInstance"
   }
 }
-
