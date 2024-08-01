@@ -1,5 +1,8 @@
 provider "aws" {
   region = var.region
+  access_key = # Enter your access key id here
+  secret_key = # Enter your secret key here
+
 }
 
 resource "aws_vpc" "WordPress_vpc_TF" {
