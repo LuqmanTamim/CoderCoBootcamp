@@ -1,0 +1,66 @@
+name: CI/CD Pipeline to Build and Push Docker Image to AWS ECR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  job1:
+    name: Build and Push Docker Image to ECR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.MY_APP_AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build and tag Docker image
+        run: |
+          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest .
+          docker tag ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
+      - name: Push Docker image to ECR
+        run: |
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
+  job2:
+    name: Deploy Docker Image From ECR to EC2
+    needs: job1
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH into EC2 and pull Docker image
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo yum install docker -y
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker ${{ secrets.EC2_USER }}
+            newgrp docker
+            exec sg docker newgrp `id -gn`
+            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCOUNT_ID }}
+            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            export AWS_DEFAULT_REGION=${{ secrets.MY_APP_AWS_REGION }}
+            aws ecr get-login-password --region ${{ secrets.MY_APP_AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com
+            docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
+            docker run -d --name my_app -p 80:80 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.MY_APP_AWS_REGION }}.amazonaws.com/${{ secrets.REPO_NAME_ECR }}:latest
+
