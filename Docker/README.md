@@ -46,5 +46,6 @@ CMD ["python3","app.py"]
 ```
 `FROM`  specifies the base image to use for the Docker image that is being built   
 `WORKDIR`  sets the working directory. In our case the working directory does not exsist but `WORKDIR` creates it  
-`COPY`  copies the file and directory from the host machine to the filesystem of the container at the specified path. This is used to include application code and other necessary files in the Docker image   
+`COPY`  copies the file and directory from the host machine to the filesystem of the container at the specified path. This is used to include application code and other necessary files in the Docker image 
+`RUN` executes commands in a new layer on top of the current image and commit the results. It is used to install software packages and dependencies, configure the environment, and set up the image for later use.  
 `CMD`  specifies the default command to run when a container is started from the image.
