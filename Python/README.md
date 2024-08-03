@@ -27,8 +27,11 @@ float 0.32, 1.234
 
 Variables can't start with a number (1name) and can only include Capital, non capital and underscore. name is different to NAME
 
+```
 name = "Luqman"
 print (name)
+```
+
 >> Luqman
 
 age = 18
@@ -38,36 +41,72 @@ print (age)
 ### Basic Operations & input
 
 ##### input 
+```
 print ('Hello, what is your name)
 name = input()                     # Allows user to input name
 print('Hello,' name)               # Prints Hello and the name that was inputted
+```
 
 ##### Operators
 
-1. Basic Operators
-+-/*
+- Basic Operators
++-/* (plus, minus, division, multiplication)
+
+1. Addition
+
+``
+added = 2 + 3
+print(f"2 + 3 = {addeded} (should be 5)")
+``
+
+
+2. Multiplication
+
+``
+multiplied = 2 * 3
+print(f"2 * 3 = {multiplied} (should be 6)")
+``
+
+3. Subtaraction
+
+``
+subtracted = 2 - 3
+print(f"2 - 3 = {subtracted} (should be -1)")
+``
+
+4. Division
 
 ```
-num1 = 45
-num2 = 3
-print (num1 + num2)
->> 48
+divided = 2 / 3
+print(f"2 / 3 = {divided} (should be 0.6666666666666666)")
 ```
 
-64 // 10 = 6 (gives as a whole number only 6 max integers can go in)
+This kind of 'decimal point' number, 0.6666666666666666 is
+called a float, by the way, meaning 'floating point'.
 
-
-5 % 2 = 1 # gives the remainder (5/2 is 2 r1)
+5. Modulus
+Sometimes known as "remainder if we divide 3 by 2"
 
 ```
-num1 = 45
-num2 = 4
-num3 = num1**num2 #exponent
-print (num3)
->> 4100625
+modulus = 3 % 2
+print(f"3 % 2 = {modulus} (should be 1)")
 ```
 
-2. Comparison Operators
+6. Floor division
+Sometimes known as "division without remainder"
+
+floor_divided = 2 // 3
+print(f"2 // 3 = {floor_divided} (should be 0)")
+
+7. Exponentiation ==
+Sometimes known as "2 to the power of 3"
+
+expr = 2 ** 3
+print(f"2 ** 3 = {expr} (should be 8)")
+
+__*Operations are calculated using BIDMAS so 2 + 3 * 4 = 14, not 20*__
+
+- Comparison Operators
 <, >, == stands from is left equal to right, != stands for not equal to, <= greater than or equal to, >= less than or equal to 
 
 ```
@@ -379,6 +418,25 @@ print(newnumber)
 ```
 returns
 >> 12
+
+
+def add_one(num):
+  return num + 1
+
+You may need to widen the panel or zoom out to see the table:
+
+| Code           | What is it?                                        |
+| -------------- | -------------------------------------------------- |
+| def            | `def` is a keyword that defines a new function     |
+| add_one        | `add_one` is the function name                     |
+| (num)          | `(num)` is the parameter list                      |
+| num            | `num` is a parameter                               |
+| :              | The `:` symbol indicates the body should start now |
+| return num + 1 | `return num + 1` is a statement                    |
+| num + 1        | `num + 1` is an expression                         |
+| num            | `num` here is a variable                           |
+| +              | `+` is an operator                                 |
+| 1              | `1` is a literal number                            |
 
 ### Reading a text file
 
