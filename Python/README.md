@@ -11,9 +11,57 @@ This is a string (sequence of characters). The bit between the bracket is text w
 
 4, 5, 6, 7
 
-2. Strings
+2. Strings 
+Made up of characters and written in single quotes '' or double quotes ""
 
-str 'Tim', "Heloo", '43r4infr'
+- str 'Tim', "Heloo", '43r4infr'
+
+```
+my_name = "Luqman"
+print (my_name)
+```
+>> Luqman
+
+- We can also also print characters
+
+```
+my_name = "Luqman"
+print (note [0])
+```
+>> L
+
+This prints the first character
+
+```
+my_name = "Luqman"
+print (note [-1])
+```
+>> n
+
+This prints the last character
+
+```
+my_name = "Luqman"
+print (note [0:3])
+```
+>> Luqm
+
+This is called a Slice and prints a portion of the string
+
+```
+old_string = "Hello, YOUR NAME!"
+new_string = old_string.replace("YOUR NAME", "Luqman")
+print (new_string)
+```
+>> Hello, Luqman!
+
+Used to replace things in a function it is called a method function
+
+```
+old_string = "Hello, YOUR NAME!"
+len(old_string)
+```
+>> String is 17 characters long 
 
 3. Boolean
 
@@ -437,6 +485,23 @@ You may need to widen the panel or zoom out to see the table:
 | num            | `num` here is a variable                           |
 | +              | `+` is an operator                                 |
 | 1              | `1` is a literal number                            |
+
+
+##### 2 step Functions
+
+```
+def function(num):
+    divided = num / 2
+    added = divided + 1
+    return added
+```
+
+It can also be written in 1 step:
+
+```
+def function(num):
+    return (num/2) + 1
+```
 
 ### Reading a text file
 
