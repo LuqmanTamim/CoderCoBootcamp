@@ -63,6 +63,29 @@ len(old_string)
 ```
 >> String is 17 characters long 
 
+- String Conatenation 
+
+```
+my_string = "Ant" + "eater"
+print (my_string)
+```
+>>Anteater 
+
+```
+my_string = "Forty" + str("2")
+print (my_string)
+```
+>> Forty2
+
+To add numbers to a string we must use the str()
+
+
+```
+my_name = "Luqman"
+print (f"Hello, {my_name})
+```
+
+
 3. Boolean
 
 bool True, False
@@ -172,6 +195,12 @@ print (4 != 5)
 >>True
 ```
 
+```
+def a_is_within_apple(a, apple):
+return a in apple
+```
+>>True
+
 ### Conditions
 
 From them are If/Elif/Else
@@ -181,6 +210,7 @@ From them are If/Elif/Else
 if x == y:
     do this
 ```
+== is a comparison operator
 
 ```
 age = input ('Input your age:')
@@ -188,6 +218,8 @@ age = input ('Input your age:')
 if age > 16:
     print ('Your old!')
 ```
+
+##### else
 
 ```
 age = input ('Input your age:')
@@ -261,13 +293,33 @@ Nested statement above
 ##### For Loops
 
 ```
-for x in range(0, 10, 1): # (start, stop, step)
-    print(x)
+def print_range():
+    for x in range(0, 10, 1): # (start, stop, step)
+        print(x)
 ```
 Prints the numbers 0-9 as 0 is the first number how the loop works it starts with 0 and does 
 x = x + 1. Step is how much you add by 
 
 ##### While Loops
+
+A while loop is like an if but it is different as it keeps on executing the block for as long as the
+
+```
+i = 0
+while i > 10:
+    print (f"the number is now {i}")
+    i = i + 1
+```
+>> the number is now 0
+the number is now 1
+the number is now 2
+the number is now 3
+the number is now 4
+the number is now 5
+the number is now 6
+the number is now 7
+the number is now 8
+the number is now 9
 
 
 ```
@@ -292,35 +344,74 @@ While loops can be used for things like password in which there is criteria i=wh
 
 ##### List
 
+Syntax for lists visit https://docs.python.org/3/tutorial/datastructures.html the official documentation
+
 ``` fruits = ['apple', 'pear', 3] ``` Catagorised by square brackets 
 
 1. chose from the list and print
+
 ``` 
 fruits = ['apple', 'pear', 3]
 
 print(fruits[0])
 ``` 
-```>> pear```
+>> apple
 
 2. adding to the list
 
 ``` 
 fruits = ['apple', 'pear', 3]
-print(fruits)
 fruits.append('strawberry')
 print(fruits)
 ``` 
+>> ['apple', 'pear', 3, 'strawberry']
 
 3. changing something on the list
 
 ``` 
-fruits = ['apple', 'pear', ''strawberry]
+fruits = ['apple', 'pear', 'strawberry']
 
 fruits[1] = 'blueberry'
 
 print(fruits)
 ``` 
 This chnages pear to blueberry
+
+4. copying the list
+
+``` 
+fruits = ['apple', 'pear', 'strawberry']
+copy_fruits = fruits.copy()
+copy_fruits.append('blueberry')
+print(fruits)
+print(copy_fruits)
+``` 
+>> ['apple', 'pear', 'strawberry', 'blueberry']
+>> ['apple', 'pear', 'strawberry', 'blueberry']
+
+alows the copying of a list without modificating the first
+
+5. remove item from list
+
+``` 
+fruits = ['apple', 'pear', 'strawberry']
+fruits.remove('strawberry')
+print(fruits)
+``` 
+>> ['apple', 'pear']
+
+Removes strawberry from the list 
+
+6. reverse the list
+
+``` 
+fruits = ['apple', 'pear', 'strawberry']
+    fruits.reverse()
+    return fruits
+``` 
+
+>> ['strawberry', 'pear', 'apple']
+
 
 ##### Tuple
 
