@@ -13,3 +13,11 @@ def add_numbers(x, y):
     return x + y
 print("add_numbers(2,3) equals to:")
 print(add_numbers(2, 3))
+
+
+def is_first_of_the_month(day_number):
+    if day_number == 1:
+        return ("First of the month")
+    else:
+        return ("Not first of the month")
+
