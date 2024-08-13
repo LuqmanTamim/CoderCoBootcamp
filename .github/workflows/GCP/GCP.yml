@@ -1,0 +1,62 @@
+name: CI/CD Pipeline to Build and Push Docker Image to GCP Container Registry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  job1:
+    name: Build and Push Docker Image to GCP Container Registry
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Authenticate with GCP
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS_JSON }}
+
+      - name: Configure Docker to use gcloud as a credential helper
+        run: |
+          gcloud auth configure-docker
+
+      - name: Build and tag Docker image
+        run: |
+          docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest .
+          docker tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
+
+      - name: Push Docker image to GCP Container Registry
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
+
+  job2:
+    name: Deploy Docker Image From GCP Container Registry to GCE Instance
+    needs: job1
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: SSH into GCE Instance and deploy Docker image
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.GCE_HOST }}
+          username: ${{ secrets.GCE_USER }}
+          key: ${{ secrets.GCE_SSH_KEY }}
+          script: |
+            sudo apt-get update
+            sudo apt-get install docker.io -y
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -aG docker ${{ secrets.GCE_USER }}
+            newgrp docker
+            gcloud auth configure-docker
+            docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
+            docker run -d --name my_app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
