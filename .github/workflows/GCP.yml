@@ -51,13 +51,12 @@ jobs:
           username: ${{ secrets.GCE_USER }}
           key: ${{ secrets.GCE_SSH_KEY }}
           script: |
-            sudo apt-get update
-            sudo apt-get install docker.io -y
-            sudo systemctl start docker
-            sudo systemctl enable docker
-            sudo usermod -aG docker ${{ secrets.GCE_USER }}
-            newgrp docker
-            gcloud auth configure-docker
-            docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
-            docker run -d --name my_app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
+  sudo apt-get update
+  sudo apt-get install docker.io -y
+  sudo systemctl start docker
+  sudo systemctl enable docker
+  sudo usermod -aG docker ${{ secrets.GCE_USER }}
+  sudo gcloud auth configure-docker
+  sudo docker pull gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
+  sudo docker run -d --name my_app -p 80:80 gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.REPO_NAME_GCR }}:latest
 
