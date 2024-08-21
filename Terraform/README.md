@@ -493,24 +493,60 @@ data "aws_instance" "foo"{
 ### Modules
 
 ##### What is a module?
-Containers for multiple resources that are used together. It is a collection of .tf and also .tf.json files that are kept in 1 directory. 
+Containers for multiple resources that are used together. It is a collection of .tf and also .tf.json files that are kept in 1 directory.
+It allows forthe centralization of resource configuration and makes it easier for the resuse of code.
 
-Modules are the main way to package and reuse resource configurations wit Terraform.
+Modules are the main way to package and reuse resource configurations with Terraform.
 
 ##### Types of Modules 
 - root module: Default module containing all .tf files in the main working directory 
-- child module: seperate module referred to from a .tf file
+```
+module "ec2" {
+  source = "../../modules/ec2"
+}
+```
+- child module: seperate module referred to from a .tf file. Its a module that has been called by another module
+
+
+##### Creating Base Modules
+
+Module is the directory and within it, the module will have multiple set of modules. 1 for EC2, IAM, SG etc.
+
+##### Calling the Module
+
+You must include a source argument in the Module block that contains location to the referenced module.
+
+The modules sources are found on Terraform repositry so you can refernce bitbucket, GitHub, S3 etc
+
+##### Conversting Hardcoded values
+
+All values should be variables whoch allows for teams to use modules and configure resource to their needs, i.e allows them to use various types of instance sizes
+
+##### Module Output
+
+References to the output in the Module:
+
+module.<MODULE NAME>.<OUTPUT NAME>
+
+
+##### Best Practices of Modules
+
+- Not hardcoding values and using variables to allow users to configure resources
+- Make multiple modules: 1 for Networking, 1 for IAM etc not 1 big module
 
 
 ### Multiple environment
 
 There are two main approaches: workspaces and file structure.
 
-1. Terraform workspaces allow for managing multiple environments of infrastructure within a single configuration. Commands are as followed:
-- ``` terraform workspace new <workspace-name> ```
-- ``` terraform workspace select <workspace-name> ```
-- ``` terraform workspace list ```
-- ``` terraform workspace delete <workspace-name> ```
+1. Terraform workspaces allow for managing multiple environments of infrastructure within a single configuration. You can have a workspace for dev, prod etc. Commands are as followed:
+- ``` terraform workspace new <workspace-name> ``` Creates a new workspace
+- ``` terraform workspace select <workspace-name> ``` Slects a new workspace
+- ``` terraform workspace list ``` Lists the workspaces
+- ``` terraform workspace delete <workspace-name> ``` Deletes the workspaces
+- ``` terraform workspace show``` Shows what workspace you are currently in
+
+These commands can be shown on the terminal by running a ```terraform workspace``` command
 
 2. File structure: Isolate components like the stagging, dev, production etc this allows for the isolation of envrionments that dont frequently change from those that change. Example of a file structure:
 
@@ -548,6 +584,7 @@ Recommended Folder structure:
 2. variables.tf file with all variables
 3. terraform.tfvars file that defines value to all variables
 
+
 ### Testing Terraform code
 
 ##### Static checks
@@ -581,12 +618,28 @@ resource "aws_security_group" "allow_tls" {
 resource "aws_security_group_ingress_ruke" "allow_tls_ipv4" {
   security_group_id = aws_security_group.allow_tls.id                # this id is also taken from the state file
   cidr_ipV4         = "${aws_eip.lb.public_ip}/32                    # this will be taken from the state file, 
-                                                                     # /32 IS THE CIDR block which must be added
-                                                                     # ${} is the string interpolation that terrfaorm uses to get info from state # file
+                                                                     /* /32 IS THE CIDR block which must be added
+                                                                     ${} is the string interpolation that terrfaorm uses to get info from state  file */
   from_port         = 80
   ip_protocol       = "tcp"
   to_port           = 80
 }
 ```
 
-w
+### Debugging
+
+You can run a ```export TF_LOG=TRACE``` then a ```terraform plan``` to get debug logs
+You can also export it to a file ```export TF_LOG_PATH="path"``` then ```terraform plan```
+
+##### Validating Terraform syntax
+
+```terraform validate``` shows if the configuration is valid 
+
+```terraform fmt``` formats the terraform code if there are formatting issues
+
+
+##### Comments
+
+"#" or "//" are used for single line comments
+
+*/ comment */ used for multi line comments 
