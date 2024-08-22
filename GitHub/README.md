@@ -81,28 +81,31 @@ git status
 git commit -m "short message clarifying what changes you made"
 ```
 
-### 11. Push changes onto git 
+### 11. Push changes onto remote Github Repository 
 
 - On the terminal and run:
 
 ```
-git push
+git push --set-upstream origin <branch_name>
 ```
 
-### Check git changes on GitHub and merge 
+### 12. Check git changes on GitHub and merge 
 - On the Github console > merge requests
 - Check request and code add comments, edit code etc
 - Merge changes
 
-### Delete branch on GitHub so branches dont clog up 
+### 13. Delete branch on GitHub so branches dont clog up 
 - Toggle delete branch 
 
-### Pull on VS Code to get latest master version 
+### 14. Pull on VS Code to get latest master version 
 
 - On the terminal and run:
 
 ```
 git pull
 ```
+
+- This commmand should be run everytime VScode is accessed to change something in the repo 
+- This is because `git pull` pulls all new changes from the remote repo to the local repo on your device (VScode on your laptop) 
 
 For more information and advanced usage, refer to the [VSCode documentation](https://code.visualstudio.com/docs) and [GitHub documentation](https://docs.github.com/en).
