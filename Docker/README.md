@@ -15,8 +15,6 @@
 - YAML  
 
 
-
-
 ### Creating the Python app
 
 VS Code was used as the IDE as it supports many programming languages and the UI is very easy to interact with.

@@ -36,11 +36,11 @@
 - If you would like to destroy a specific resource such as an ec2 instance you can use 
 ``` terraform destroy -target aws_instance.myec2 ``` where aws_instance is the resource and myec2 is the local resource name
 
-##### State File
+### State File
 
 1. JSON file containing information about every resource and data object provisioned on AWS.
 2. Conatins sensitive info such as passwords so best practice to restrict access
-3. Can be stored locally or remotely. Remote backend is best practice to allow many engineers to work on the files together, encrypt the data, and automate through pipelines.
+3. Can be stored locally or remotely. Remote backend is best practice to allow many engineers to work on the files together, encrypt the data, and automate through pipelines. You can store it on S3 on AWS for example.
 4. Current state is the current state of the infrastructure and the desired state is what the infrastructure should be
 
 ###### Dependancy lock file
@@ -48,7 +48,17 @@ The file allows for the locking of a specific version of Terraform
 
 ##### Terraform State is the actual state of the infrastructure and Terraform Config is the new desired state of the infrastructure. We can use ``` terraform apply `` to apply this infrastructure.
 
-##### Remote Backend
+
+##### State Management commands
+
+- ```terraform state mv <resource_name> <new_resource_name>``` mv changes the name of the resource without creaing and destroying resource
+- ```terraform state pull``` Allows for manually downloading and outputing the terraform state file from a remote state
+- ```terraform state push``` used to manually upload a local state file to a remote state
+- ```terraform state rm <resource>``` Used to remove resource from the state file 
+- ```terraform state show <resource>``` Used to show attributes of a sigle resource in the Terraform state
+
+
+### Remote Backend
 1. Terraform cloud: In the Terraform script you specify an organisation and worksapce name which allows for users to interact with the backend.
 2. AWS S3 Bucket: The script must include a S3 bucket for storage of the state file and a DynamoDB for locking access to the file if one user is activley working on the file. Involes a bootstapping process. Bootstrapping in this context refers to the inital set up proccess necessary to prepare the infrastructure before applying the main Terraform configuration
 - First we specify the terraform script with no remote backend
@@ -56,7 +66,23 @@ The file allows for the locking of a specific version of Terraform
 - ``` terraform apply ``` which will apply S3 buscket and DynamoDB table
 - Now we can change the script and use S3 bucket as specified remote backend and the rest of the configuration is unchanged. Changing the backend from local to remote on AWS S3
 
-##### Script detailing
+For more information visit https://developer.hashicorp.com/terraform/language/settings/backends/s3
+
+##### Terraform Import
+- Terrafrom can import manually created resources as code using import feature, by creating a file and inputting:
+
+```
+import {
+  to = <resource>.<local_name>
+  id = "id_of_resource"
+}
+```
+- Where the reosurce is the manually created resource on the AWS console
+- Then run a ```terraform plan -generate-config-out=<new_filename>.tf``` which creates the IaC file
+- Then run a ```terraform apply``` to create a statefile
+
+
+### Script detailing
 1. When adding a resource to the script that is not already apart of the infrastructure we use ``` resource ``` as an example: 
 
 ```
@@ -155,6 +181,8 @@ output "instance_public_ip" {
 }
 
 ```
+
+- IF you would like to output a sensitive variable the CLI will throw an error if you try to output that sensitive variable 
 
 Variables also have a precedence order
 
@@ -686,3 +714,49 @@ It is recommended to ignore:
 - terraform.tfvars which is likley to include usernames and passwords and secrets 
 - terrfaorm.tfstate can include usernames/passwords
 - crash.log if terraform crashes logsa are stored there
+
+
+##### Multiple Provider config
+
+Lets say you have multiple resources in a .tf file but you want the resources in different regions you can use a ```alias``` sytnax:
+
+```
+provider "aws" {
+  alias  = "USA"
+  region = "us-east-1"
+}
+
+provider "aws" {
+  alias  = "India"
+  region = "ap-south-1"
+}
+
+resource "aws_security_group" "mysg1" {
+  name = "prod_firewall"
+  provider = aws.USA
+}
+
+resource "aws_security_group" "mysg2" {
+  name = "dev_firewall"
+  provider = aws.India
+}
+
+```
+
+
+##### Sensitive Parameter
+
+To not expose sensitive passwords and other data in the CLI output when running a ```terraform plan``` we can use a sensitive parameter:
+
+```
+variable "sensitive_data" {
+  sensitive = true
+  default   = "Secret_Password"
+}
+
+resource "local_file" "file" {
+  content  = var.sensitive_data
+  filename = "password.txt"
+}
+```
+
