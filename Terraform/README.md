@@ -585,6 +585,28 @@ Recommended Folder structure:
 3. terraform.tfvars file that defines value to all variables
 
 
+##### Working with Workspaces
+
+If the prod env and dev env want to create an EC2 instance but they both need different EC2 types:
+
+```
+locals {
+  instance_type = {
+    default = "t2.nano"
+    dev     = "t2.micro"
+    prod    = "m5.large"
+  }
+}
+
+resource "aws_instance" "myec2" {
+  ami           = "ami-08a0d1e16fc3f61!
+  instance_type = local.instance_type[terraform.workspace]     # EC2 will be created according to which workspace you are in 
+}
+
+
+```
+
+
 ### Testing Terraform code
 
 ##### Static checks
@@ -638,8 +660,29 @@ You can also export it to a file ```export TF_LOG_PATH="path"``` then ```terrafo
 ```terraform fmt``` formats the terraform code if there are formatting issues
 
 
-##### Comments
+### Comments
 
 "#" or "//" are used for single line comments
 
 */ comment */ used for multi line comments 
+
+
+### Security challengs in TFstate
+
+##### Adding passwords
+
+Instead of adding the key pair directly on your Terraform file for the password you can:
+
+```password = "$(file("path"))"```
+
+##### Gitignore
+
+Text file that telss git which files or folders to ignore in a project
+
+File is called .gitignore
+
+It is recommended to ignore:
+- .terrfaorm which is created when terraform init is run
+- terraform.tfvars which is likley to include usernames and passwords and secrets 
+- terrfaorm.tfstate can include usernames/passwords
+- crash.log if terraform crashes logsa are stored there
